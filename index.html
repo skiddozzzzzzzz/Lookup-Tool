@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>IP Lookup Pro – Airport Fixed</title>
+<title>IP Lookup Pro – Fast Airports</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-/* same styling as before */
+/* Same styling as before */
 :root {
     --primary: #2563eb;
     --success: #10b981;
@@ -16,343 +16,168 @@
     --border: #e2e8f0;
 }
 * { box-sizing: border-box; }
-body {
-    font-family: system-ui, -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    margin: 0;
-    padding: 2rem;
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-}
-.container {
-    max-width: 600px;
-    width: 100%;
-    background: var(--card);
-    border-radius: 1rem;
-    box-shadow: 0 10px 30px rgba(0,0,0,.1);
-    padding: 2rem;
-}
-h1 {
-    text-align: center;
-    color: var(--primary);
-    margin-bottom: 1.5rem;
-    font-size: 1.9rem;
-}
-input, button {
-    width: 100%;
-    padding: .9rem;
-    margin: .6rem 0;
-    border-radius: .6rem;
-    font-size: 1rem;
-    transition: .2s;
-}
-input {
-    border: 2px solid var(--border);
-}
-input:focus {
-    outline: none;
-    border-color: var(--primary);
-}
-button {
-    background: var(--primary);
-    color: white;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-}
-button:hover { background: #1d4ed8; }
-.btn-copy {
-    background: var(--success);
-    margin-top: 1rem;
-    font-size: .95rem;
-}
-.btn-copy:hover { background: #059669; }
-.loading, .error {
-    display: none;
-    text-align: center;
-    padding: .8rem;
-    margin: .8rem 0;
-    border-radius: .5rem;
-    font-weight: 500;
-}
-.loading { background: #dbeafe; color: #1e40af; }
-.error { background: #fee2e2; color: #b91c1c; }
-.result {
-    display: none;
-    margin-top: 1.5rem;
-    padding: 1.2rem;
-    background: #f8fafc;
-    border: 1px solid var(--border);
-    border-radius: .8rem;
-}
-.result.show { display: block; animation: fade .4s; }
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin:0; padding:2rem; display:flex; justify-content:center; min-height:100vh; }
+.container { max-width:600px; width:100%; background:var(--card); border-radius:1rem; box-shadow:0 10px 30px rgba(0,0,0,.1); padding:2rem; }
+h1 { text-align:center; color:var(--primary); margin-bottom:1.5rem; font-size:1.9rem; }
+input, button { width:100%; padding:.9rem; margin:.6rem 0; border-radius:.6rem; font-size:1rem; transition:.2s; }
+input { border:2px solid var(--border); }
+input:focus { outline:none; border-color:var(--primary); }
+button { background:var(--primary); color:white; border:none; font-weight:600; cursor:pointer; }
+button:hover { background:#1d4ed8; }
+.btn-copy { background: var(--success); margin-top:1rem; font-size:.95rem; }
+.btn-copy:hover { background:#059669; }
+.loading, .error { display:none; text-align:center; padding:.8rem; margin:.8rem 0; border-radius:.5rem; font-weight:500; }
+.loading { background:#dbeafe; color:#1e40af; }
+.error { background:#fee2e2; color:#b91c1c; }
+.result { display:none; margin-top:1.5rem; padding:1.2rem; background:#f8fafc; border:1px solid var(--border); border-radius:.8rem; }
+.result.show { display:block; animation:fade .4s; }
 @keyframes fade { from {opacity:0; transform:translateY(8px);} to {opacity:1; transform:none;} }
-.section { margin-bottom: 1.2rem; }
-.section h3 {
-    margin: 0 0 .5rem;
-    color: var(--primary);
-    font-size: 1.1rem;
-}
-.address-box, .airport-box {
-    padding: 1rem;
-    border-radius: .5rem;
-    margin: .5rem 0;
-    font-family: 'Courier New', monospace;
-    font-size: .95rem;
-    line-height: 1.5;
-}
-.address-box {
-    background: #ecfdf5;
-    border-left: 4px solid var(--success);
-}
-.airport-box {
-    background: #fef9c7;
-    border-left: 4px solid var(--warning);
-}
-.airport-list {
-    max-height: 300px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    border-radius: .5rem;
-    padding: .5rem;
-    background: #fff;
-    font-size: .9rem;
-}
-.airport-item {
-    padding: .6rem .8rem;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.airport-item:last-child { border-bottom: none; }
-.airport-name { font-weight: 600; }
-.airport-dist { color: #dc2626; font-weight: bold; }
-.copy-notif {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #10b981;
-    color: white;
-    padding: .8rem 1.2rem;
-    border-radius: .5rem;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,.15);
-    opacity: 0;
-    transition: opacity .3s;
-    pointer-events: none;
-    z-index: 1000;
-}
-.copy-notif.show { opacity: 1; }
+.section { margin-bottom:1.2rem; }
+.section h3 { margin:0 0 .5rem; color:var(--primary); font-size:1.1rem; }
+.address-box, .airport-box { padding:1rem; border-radius:.5rem; margin:.5rem 0; font-family:'Courier New', monospace; font-size:.95rem; line-height:1.5; }
+.address-box { background:#ecfdf5; border-left:4px solid var(--success); }
+.airport-box { background:#fef9c7; border-left:4px solid var(--warning); }
+.airport-list { max-height:300px; overflow-y:auto; border:1px solid #ddd; border-radius:.5rem; padding:.5rem; background:#fff; font-size:.9rem; }
+.airport-item { padding:.6rem .8rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; }
+.airport-item:last-child { border-bottom:none; }
+.airport-name { font-weight:600; }
+.airport-dist { color:#dc2626; font-weight:bold; }
+.copy-notif { position:fixed; bottom:20px; right:20px; background:#10b981; color:white; padding:.8rem 1.2rem; border-radius:.5rem; font-weight:500; box-shadow:0 4px 12px rgba(0,0,0,.15); opacity:0; transition:opacity .3s; pointer-events:none; z-index:1000; }
+.copy-notif.show { opacity:1; }
 </style>
 </head>
 <body>
 <div class="container">
-    <h1>IP Lookup Pro By Notti</h1>
-    <input id="ipInput" placeholder="Enter IP (e.g. 8.8.8.8) or leave blank for your IP">
-    <button onclick="lookupIP()">Lookup IP</button>
+<h1>IP Lookup Pro – Fast Airports</h1>
+<input id="ipInput" placeholder="Enter IP (e.g. 8.8.8.8) or leave blank for your IP">
+<button onclick="lookupIP()">Lookup IP</button>
 
-    <div class="loading" id="loading">Fetching data...</div>
-    <div class="error" id="error"></div>
+<div class="loading" id="loading">Fetching data...</div>
+<div class="error" id="error"></div>
 
-    <div class="result" id="result">
-        <div class="section">
-            <p><strong>IP ADDRESS:</strong> <span id="ip"></span></p>
-            <p><strong>COUNTRY:</strong> <span id="country"></span></p>
-            <p><strong>ISP:</strong> <span id="isp"></span></p>
-        </div>
-
-        <div class="section">
-            <h3>Home Address</h3>
-            <div class="address-box" id="address">—</div>
-        </div>
-
-        <div class="section">
-            <h3>Nearest Airport</h3>
-            <div class="airport-box" id="nearestAirport">—</div>
-        </div>
-
-        <div class="section">
-            <h3>All Airports within 100 km</h3>
-            <div class="airport-list" id="airportList">
-                <em>No airports found in range.</em>
-            </div>
-        </div>
-
-        <button class="btn-copy" onclick="copyResults()">Copy All Results</button>
+<div class="result" id="result">
+    <div class="section">
+        <p><strong>IP ADDRESS:</strong> <span id="ip"></span></p>
+        <p><strong>COUNTRY:</strong> <span id="country"></span></p>
+        <p><strong>ISP:</strong> <span id="isp"></span></p>
     </div>
+
+    <div class="section">
+        <h3>Home Address</h3>
+        <div class="address-box" id="address">—</div>
+    </div>
+
+    <div class="section">
+        <h3>Nearest Airport</h3>
+        <div class="airport-box" id="nearestAirport">—</div>
+    </div>
+
+    <div class="section">
+        <h3>All Airports within 100 km</h3>
+        <div class="airport-list" id="airportList">
+            <em>No airports found in range.</em>
+        </div>
+    </div>
+
+    <button class="btn-copy" onclick="copyResults()">Copy All Results</button>
+</div>
 </div>
 
 <div class="copy-notif" id="copyNotif">Copied to clipboard!</div>
 
 <script>
 const cache = new Map();
+let airportsCSV = null; // cache the CSV in memory
 
-async function lookupIP() {
+async function fetchAirportsCSV(){
+    if(airportsCSV) return airportsCSV; // already cached
+    const proxy = 'https://api.allorigins.win/get?url=';
+    const url = encodeURIComponent('https://ourairports.com/data/airports.csv');
+    const resp = await fetch(proxy+url);
+    const data = await resp.json();
+    airportsCSV = data.contents;
+    return airportsCSV;
+}
+
+async function lookupIP(){
     const ipInput = document.getElementById('ipInput').value.trim();
     const loading = document.getElementById('loading');
-    const error   = document.getElementById('error');
-    const result  = document.getElementById('result');
-
-    error.style.display = 'none';
-    result.classList.remove('show');
-    loading.style.display = 'block';
-
-    let ip = ipInput;
-
-    try {
-        // 1. Get IP
-        if (!ip) {
+    const error = document.getElementById('error');
+    const result = document.getElementById('result');
+    error.style.display='none'; result.classList.remove('show'); loading.style.display='block';
+    try{
+        let ip = ipInput;
+        if(!ip){
             const r = await fetch('https://api.ipify.org?format=json');
             const d = await r.json();
-            ip = d.ip;
+            ip=d.ip;
         }
 
-        // 2. Geo
         const geoResp = await fetch(`https://ipapi.co/${ip}/json/`);
         const geo = await geoResp.json();
-        if (geo.error) throw new Error(geo.reason || 'IP lookup failed');
+        if(geo.error) throw new Error(geo.reason || 'IP lookup failed');
         const {latitude:lat, longitude:lon, country_name, country, org, asn} = geo;
 
-        // 3. Home Address (reverse geocode)
-        const addrResp = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`,
-            {headers:{'User-Agent':'IPLookupTool/1.0'}}
-        );
+        const addrResp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`,{headers:{'User-Agent':'IPLookupTool/1.0'}});
         const addrData = await addrResp.json();
         const homeAddr = formatAddress(addrData);
 
-        // 4. Airports (no API key – public dataset)
         const airportData = await getNearbyAirports(lat, lon);
 
-        // 5. UI update
         document.getElementById('ip').textContent = ip;
         document.getElementById('country').textContent = `${country_name} (${country})`;
-        document.getElementById('isp').textContent = org || asn || 'Unknown';
+        document.getElementById('isp').textContent = org||asn||'Unknown';
         document.getElementById('address').textContent = homeAddr;
 
-        if (airportData.length > 0) {
+        if(airportData.length>0){
             const nearest = airportData[0];
-            document.getElementById('nearestAirport').innerHTML = `
-                <strong>${nearest.name}</strong><br>
-                <em>${nearest.distance.toFixed(1)} km away</em><br>
-                ${nearest.city ? nearest.city + ', ' : ''}${nearest.country || ''}
-            `;
-            document.getElementById('airportList').innerHTML = airportData.map(a => `
-                <div class="airport-item">
-                    <div>
-                        <div class="airport-name">${a.name}</div>
-                        <small>${a.iata || ''} ${a.icao ? '• '+a.icao : ''}</small>
-                    </div>
-                    <div class="airport-dist">${a.distance.toFixed(1)} km</div>
-                </div>
-            `).join('');
+            document.getElementById('nearestAirport').innerHTML = `<strong>${nearest.name}</strong><br><em>${nearest.distance.toFixed(1)} km away</em><br>${nearest.city?nearest.city+', ':''}${nearest.country||''}`;
+            document.getElementById('airportList').innerHTML = airportData.map(a=>`<div class="airport-item"><div><div class="airport-name">${a.name}</div><small>${a.iata||''} ${a.icao?'• '+a.icao:''}</small></div><div class="airport-dist">${a.distance.toFixed(1)} km</div></div>`).join('');
         } else {
-            document.getElementById('nearestAirport').textContent = 'No airports within 100 km';
-            document.getElementById('airportList').innerHTML = '<em>No airports found.</em>';
+            document.getElementById('nearestAirport').textContent='No airports within 100 km';
+            document.getElementById('airportList').innerHTML='<em>No airports found.</em>';
         }
-
         result.classList.add('show');
-    } catch (e) {
-        error.textContent = e.message;
-        error.style.display = 'block';
-    } finally {
-        loading.style.display = 'none';
-    }
+    } catch(e){ error.textContent=e.message; error.style.display='block'; }
+    finally{ loading.style.display='none'; }
 }
 
-// Format readable address
-function formatAddress(d) {
-    if (!d || !d.address) return 'Address not available';
-    const a = d.address;
-    const parts = [];
-    if (a.house_number) parts.push(a.house_number);
-    if (a.road) parts.push(a.road);
-    if (a.suburb) parts.push(a.suburb);
-    if (a.city || a.town) parts.push(a.city || a.town);
-    if (a.state) parts.push(a.state);
-    if (a.country) parts.push(a.country);
-    return parts.join(', ');
-}
+function formatAddress(d){ if(!d||!d.address)return'Address not available'; const a=d.address; const parts=[]; if(a.house_number)parts.push(a.house_number); if(a.road)parts.push(a.road); if(a.suburb)parts.push(a.suburb); if(a.city||a.town)parts.push(a.city||a.town); if(a.state)parts.push(a.state); if(a.country)parts.push(a.country); return parts.join(', '); }
 
-// Calculate distance between two coords
-function distance(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI/180;
-    const dLon = (lon2 - lon1) * Math.PI/180;
-    const a = Math.sin(dLat/2)**2 +
-              Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
-              Math.sin(dLon/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
+function distance(lat1, lon1, lat2, lon2){ const R=6371; const dLat=(lat2-lat1)*Math.PI/180; const dLon=(lon2-lon1)*Math.PI/180; const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2; return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); }
 
-// Load airports from OurAirports dataset and find nearest
-async function getNearbyAirports(lat, lon) {
-    const resp = await fetch('https://ourairports.com/data/airports.csv');
-    const csv = await resp.text();
-    const rows = csv.split('\n').slice(1).map(r => r.split(',')).filter(r => r.length > 5);
+async function getNearbyAirports(lat, lon){
+    const csv = await fetchAirportsCSV();
+    const rows = csv.split('\n').slice(1).map(r=>r.split(',')).filter(r=>r.length>5);
     const airports = [];
-
-    for (const r of rows) {
-        const name = r[3];
-        const aLat = parseFloat(r[4]);
-        const aLon = parseFloat(r[5]);
-        const iata = r[13];
-        const icao = r[1];
-        const country = r[8];
-        const city = r[10];
-        if (!isNaN(aLat) && !isNaN(aLon)) {
-            const dist = distance(lat, lon, aLat, aLon);
-            if (dist <= 100) airports.push({name, lat:aLat, lon:aLon, distance:dist, iata, icao, country, city});
+    for(const r of rows){
+        const name=r[3], aLat=parseFloat(r[4]), aLon=parseFloat(r[5]), iata=r[13], icao=r[1], country=r[8], city=r[10];
+        if(!isNaN(aLat)&&!isNaN(aLon)){
+            const dist=distance(lat, lon, aLat, aLon);
+            if(dist<=100) airports.push({name, lat:aLat, lon:aLon, distance:dist, iata, icao, country, city});
         }
     }
     airports.sort((a,b)=>a.distance-b.distance);
     return airports;
 }
 
-// Copy results
-async function copyResults() {
-    const ip = document.getElementById('ip').textContent;
-    const country = document.getElementById('country').textContent;
-    const isp = document.getElementById('isp').textContent;
-    const address = document.getElementById('address').textContent;
-    const nearest = document.getElementById('nearestAirport').innerText;
-
-    const listItems = Array.from(document.querySelectorAll('.airport-item')).map(item => {
-        const name = item.querySelector('.airport-name').textContent;
-        const dist = item.querySelector('.airport-dist').textContent;
+async function copyResults(){
+    const ip=document.getElementById('ip').textContent;
+    const country=document.getElementById('country').textContent;
+    const isp=document.getElementById('isp').textContent;
+    const address=document.getElementById('address').textContent;
+    const nearest=document.getElementById('nearestAirport').innerText;
+    const listItems=Array.from(document.querySelectorAll('.airport-item')).map(item=>{
+        const name=item.querySelector('.airport-name').textContent;
+        const dist=item.querySelector('.airport-dist').textContent;
         return `• ${name} – ${dist}`;
     });
-
-    const text = `
-IP LOOKUP BY NOTTI
-━━━━━━━━━━━━━━━━━━━━
-IP Address: ${ip}
-Country: ${country}
-ISP: ${isp}
-
-HOME ADDRESS
-${address}
-
-NEAREST AIRPORT
-${nearest}
-
-ALL AIRPORTS WITHIN 100 KM
-${listItems.join('\n')}
-`.trim();
-
+    const text=`IP LOOKUP RESULTS\n━━━━━━━━━━━━━━━━━━━━\nIP Address: ${ip}\nCountry: ${country}\nISP: ${isp}\n\nHOME ADDRESS\n${address}\n\nNEAREST AIRPORT\n${nearest}\n\nALL AIRPORTS WITHIN 100 KM\n${listItems.join('\n')}`.trim();
     await navigator.clipboard.writeText(text);
-    const notif = document.getElementById('copyNotif');
-    notif.classList.add('show');
-    setTimeout(() => notif.classList.remove('show'), 2000);
+    const notif=document.getElementById('copyNotif'); notif.classList.add('show'); setTimeout(()=>notif.classList.remove('show'),2000);
 }
 
-// Enter key handler
-document.getElementById('ipInput').addEventListener('keypress', e => {
-    if (e.key === 'Enter') lookupIP();
-});
+document.getElementById('ipInput').addEventListener('keypress', e=>{ if(e.key==='Enter') lookupIP(); });
 </script>
 </body>
 </html>
