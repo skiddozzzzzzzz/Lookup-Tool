@@ -2,217 +2,150 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>IP Lookup Pro – Airports & Full Address</title>
+<title>IP Lookup Pro – Full Address & Nearest Airport</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-:root {
-    --primary: #2563eb;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --bg: #f4f6f9;
-    --card: #ffffff;
-    --text: #1f2937;
-    --border: #e2e8f0;
-}
-* { box-sizing: border-box; }
-body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin:0; padding:2rem; display:flex; justify-content:center; min-height:100vh; }
-.container { max-width:700px; width:100%; background:var(--card); border-radius:1rem; box-shadow:0 10px 30px rgba(0,0,0,.1); padding:2rem; }
-h1 { text-align:center; color:var(--primary); margin-bottom:1.5rem; font-size:1.9rem; }
-input, button { width:100%; padding:.9rem; margin:.6rem 0; border-radius:.6rem; font-size:1rem; transition:.2s; }
-input { border:2px solid var(--border); }
-input:focus { outline:none; border-color:var(--primary); }
-button { background:var(--primary); color:white; border:none; font-weight:600; cursor:pointer; }
-button:hover { background:#1d4ed8; }
-.btn-copy { background: var(--success); margin-top:1rem; font-size:.95rem; }
-.btn-copy:hover { background:#059669; }
-.loading, .error { display:none; text-align:center; padding:.8rem; margin:.8rem 0; border-radius:.5rem; font-weight:500; }
-.loading { background:#dbeafe; color:#1e40af; }
-.error { background:#fee2e2; color:#b91c1c; }
-.result { display:none; margin-top:1.5rem; padding:1.2rem; background:#f8fafc; border:1px solid var(--border); border-radius:.8rem; }
-.result.show { display:block; animation:fade .4s; }
-@keyframes fade { from {opacity:0; transform:translateY(8px);} to {opacity:1; transform:none;} }
-.section { margin-bottom:1.2rem; }
-.section h3 { margin:0 0 .5rem; color:var(--primary); font-size:1.1rem; }
-.address-box, .airport-box { padding:1rem; border-radius:.5rem; margin:.5rem 0; font-family:'Courier New', monospace; font-size:.95rem; line-height:1.5; }
-.address-box { background:#ecfdf5; border-left:4px solid var(--success); }
-.airport-box { background:#fef9c7; border-left:4px solid var(--warning); }
-.airport-list { max-height:300px; overflow-y:auto; border:1px solid #ddd; border-radius:.5rem; padding:.5rem; background:#fff; font-size:.9rem; }
-.airport-item { padding:.6rem .8rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; }
-.airport-item:last-child { border-bottom:none; }
-.airport-name { font-weight:600; }
-.airport-dist { color:#dc2626; font-weight:bold; }
-.copy-notif { position:fixed; bottom:20px; right:20px; background:#10b981; color:white; padding:.8rem 1.2rem; border-radius:.5rem; font-weight:500; box-shadow:0 4px 12px rgba(0,0,0,.15); opacity:0; transition:opacity .3s; pointer-events:none; z-index:1000; }
-.copy-notif.show { opacity:1; }
+body{font-family:system-ui;background:#f4f6f9;color:#1f2937;margin:0;padding:2rem;display:flex;justify-content:center;min-height:100vh;}
+.container{max-width:700px;width:100%;background:#fff;border-radius:1rem;box-shadow:0 10px 30px rgba(0,0,0,.1);padding:2rem;}
+h1{text-align:center;color:#2563eb;margin-bottom:1.5rem;font-size:1.9rem;}
+input,button{width:100%;padding:.9rem;margin:.6rem 0;border-radius:.6rem;font-size:1rem;transition:.2s;}
+input{border:2px solid #e2e8f0;}
+input:focus{outline:none;border-color:#2563eb;}
+button{background:#2563eb;color:white;border:none;font-weight:600;cursor:pointer;}
+button:hover{background:#1d4ed8;}
+.result{display:none;margin-top:1.5rem;padding:1.2rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:.8rem;}
+.result.show{display:block;}
+.address-box,.airport-box{padding:1rem;border-radius:.5rem;margin:.5rem 0;font-family:'Courier New',monospace;font-size:.95rem;line-height:1.5;}
+.address-box{background:#ecfdf5;border-left:4px solid #10b981;}
+.airport-box{background:#fef9c7;border-left:4px solid #f59e0b;}
+.airport-list{max-height:300px;overflow-y:auto;border:1px solid #ddd;border-radius:.5rem;padding:.5rem;background:#fff;font-size:.9rem;}
+.airport-item{padding:.6rem .8rem;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;}
+.airport-item:last-child{border-bottom:none;}
+.airport-name{font-weight:600;}
+.airport-dist{color:#dc2626;font-weight:bold;}
+.copy-notif{position:fixed;bottom:20px;right:20px;background:#10b981;color:white;padding:.8rem 1.2rem;border-radius:.5rem;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.15);opacity:0;transition:opacity .3s;pointer-events:none;z-index:1000;}
+.copy-notif.show{opacity:1;}
 </style>
 </head>
 <body>
 <div class="container">
-<h1>IP Lookup Pro – Airports & Full Address</h1>
-<input id="ipInput" placeholder="Enter IP (e.g. 8.8.8.8) or leave blank for your IP">
+<h1>IP Lookup Pro</h1>
+<input id="ipInput" placeholder="Enter IP (leave blank for your IP)">
 <button onclick="lookupIP()">Lookup IP</button>
 
-<div class="loading" id="loading">Fetching data...</div>
-<div class="error" id="error"></div>
-
 <div class="result" id="result">
-    <div class="section">
-        <p><strong>IP ADDRESS:</strong> <span id="ip"></span></p>
-        <p><strong>COUNTRY:</strong> <span id="country"></span></p>
+    <div>
+        <p><strong>IP:</strong> <span id="ip"></span></p>
+        <p><strong>Country:</strong> <span id="country"></span></p>
         <p><strong>ISP:</strong> <span id="isp"></span></p>
     </div>
-
-    <div class="section">
+    <div>
         <h3>Home Address</h3>
         <div class="address-box" id="address">—</div>
     </div>
-
-    <div class="section">
+    <div>
         <h3>Nearest Airport</h3>
         <div class="airport-box" id="nearestAirport">—</div>
     </div>
-
-    <div class="section">
-        <h3>All Airports within 100 km</h3>
-        <div class="airport-list" id="airportList"><em>No airports found in range.</em></div>
+    <div>
+        <h3>All Nearby Airports (50 km)</h3>
+        <div class="airport-list" id="airportList"><em>No airports found.</em></div>
     </div>
-
-    <button class="btn-copy" onclick="copyResults()">Copy All Results</button>
+    <button onclick="copyResults()">Copy Results</button>
 </div>
+<div class="copy-notif" id="copyNotif">Copied!</div>
 </div>
-
-<div class="copy-notif" id="copyNotif">Copied to clipboard!</div>
 
 <script>
-// Cache
-const addressCache = new Map();
-let airportsCSV = null;
-
-// Fetch OurAirports CSV
-async function fetchAirportsCSV(){
-    if(airportsCSV) return airportsCSV;
-    const resp = await fetch('/airports.csv'); // Place OurAirports CSV in public folder
-    airportsCSV = await resp.text();
-    return airportsCSV;
-}
-
-// Distance formula
-function distance(lat1, lon1, lat2, lon2){
-    const R = 6371;
-    const dLat = (lat2-lat1)*Math.PI/180;
-    const dLon = (lon2-lon1)*Math.PI/180;
-    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-    return R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
-
-// Format address from Nominatim
-function formatAddress(data){
-    if(!data || !data.address) return "Address not available";
-    const a = data.address;
-    const parts = [];
-    if(a.house_number) parts.push(a.house_number);
-    if(a.road) parts.push(a.road);
-    if(a.suburb || a.neighbourhood) parts.push(a.suburb || a.neighbourhood);
-    if(a.city || a.town || a.village) parts.push(a.city || a.town || a.village);
-    if(a.state) parts.push(a.state);
-    if(a.postcode) parts.push(a.postcode);
-    if(a.country) parts.push(a.country);
-    return parts.join(', ') || data.display_name || "Unknown";
-}
-
-// Reverse geocode in English
 async function reverseGeocode(lat, lon){
-    const key = `${lat},${lon}`;
-    if(addressCache.has(key)) return addressCache.get(key);
     try{
-        const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1&accept-language=en`,
-            {headers:{'User-Agent':'IPLookupTool/1.0'}});
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1&accept-language=en`,{
+            headers:{'User-Agent':'IPLookupTool/1.0'}
+        });
+        const data = await res.json();
+        const a = data.address;
+        const parts = [];
+        if(a.road) parts.push(a.road);
+        if(a.house_number) parts.push(a.house_number);
+        if(a.suburb||a.neighbourhood) parts.push(a.suburb||a.neighbourhood);
+        if(a.city||a.town||a.village) parts.push(a.city||a.town||a.village);
+        if(a.postcode) parts.push(a.postcode);
+        if(a.state) parts.push(a.state);
+        if(a.country) parts.push(a.country);
+        return parts.join(', ')||data.display_name||"Unknown";
+    }catch(e){return "Address not available";}
+}
+
+// Haversine formula
+function distance(lat1, lon1, lat2, lon2){
+    const R=6371;
+    const dLat=(lat2-lat1)*Math.PI/180;
+    const dLon=(lon2-lon1)*Math.PI/180;
+    const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+async function getAirports(lat, lon){
+    try{
+        // Airportgap API (Free, no key)
+        const resp = await fetch(`https://airportgap.dev-tester.com/api/airports?lat=${lat}&lng=${lon}&distance=50`);
         const data = await resp.json();
-        const addr = formatAddress(data);
-        addressCache.set(key, addr);
-        return addr;
-    }catch(e){ return "Address not available"; }
-}
-
-// Nearby airports within 100 km
-async function getNearbyAirports(lat, lon){
-    const csv = await fetchAirportsCSV();
-    const rows = csv.split("\n").slice(1).map(r=>r.split(",")).filter(r=>r.length>5);
-    const airports = [];
-    for(const r of rows){
-        const icao = r[0], iata = r[12], name = r[2];
-        const aLat = parseFloat(r[3]), aLon = parseFloat(r[4]);
-        if(!isNaN(aLat) && !isNaN(aLon)){
-            const dist = distance(lat, lon, aLat, aLon);
-            if(dist <= 100) airports.push({icao,iata,name,lat:aLat,lon:aLon,distance:dist});
+        // Sort by distance
+        data.sort((a,b)=>a.distance-b.distance);
+        for(const a of data){
+            a.fullAddress = await reverseGeocode(a.lat,a.lng);
         }
-    }
-    airports.sort((a,b)=>a.distance-b.distance);
-    for(const a of airports){
-        a.fullAddress = await reverseGeocode(a.lat, a.lon);
-    }
-    return airports;
+        return data;
+    }catch(e){ return []; }
 }
 
-// Main lookup
 async function lookupIP(){
-    const ipInput = document.getElementById('ipInput').value.trim();
-    const loading = document.getElementById('loading');
-    const error = document.getElementById('error');
-    const result = document.getElementById('result');
-    error.style.display='none'; result.classList.remove('show'); loading.style.display='block';
+    const ip = document.getElementById('ipInput').value.trim() || (await (await fetch('https://api.ipify.org?format=json')).json()).ip;
+    document.getElementById('ip').textContent = ip;
 
     try{
-        let ip = ipInput;
-        if(!ip){
-            const r = await fetch('https://api.ipify.org?format=json');
-            ip = (await r.json()).ip;
-        }
+        const geo = await (await fetch(`https://ipapi.co/${ip}/json/`)).json();
+        document.getElementById('country').textContent = `${geo.country_name} (${geo.country})`;
+        document.getElementById('isp').textContent = geo.org||geo.asn||"Unknown";
 
-        const geoResp = await fetch(`https://ipapi.co/${ip}/json/`);
-        const geo = await geoResp.json();
-        if(geo.error) throw new Error(geo.reason || 'IP lookup failed');
-        const {latitude:lat, longitude:lon, country_name, country, org, asn} = geo;
-
-        const homeAddr = await reverseGeocode(lat, lon);
-        const airports = await getNearbyAirports(lat, lon);
-
-        document.getElementById('ip').textContent = ip;
-        document.getElementById('country').textContent = `${country_name} (${country})`;
-        document.getElementById('isp').textContent = org || asn || "Unknown";
+        const homeAddr = await reverseGeocode(geo.latitude, geo.longitude);
         document.getElementById('address').textContent = homeAddr;
 
-        if(airports.length>0){
+        const airports = await getAirports(geo.latitude, geo.longitude);
+        if(airports.length){
             const nearest = airports[0];
-            document.getElementById('nearestAirport').innerHTML = `<strong>${nearest.name} ${nearest.iata?`(${nearest.iata})`:''} ${nearest.icao?`[${nearest.icao}]`:''}</strong><br><em>${nearest.distance.toFixed(1)} km away</em><br>${nearest.fullAddress}`;
-            document.getElementById('airportList').innerHTML = airports.map(a=>`<div class="airport-item"><div><div class="airport-name">${a.name}</div><small>${a.iata||''} ${a.icao?'• '+a.icao:''}</small></div><div class="airport-dist">${a.distance.toFixed(1)} km</div></div>`).join('');
-        } else {
-            document.getElementById('nearestAirport').textContent = 'No airports within 100 km';
-            document.getElementById('airportList').innerHTML = '<em>No airports found.</em>';
+            document.getElementById('nearestAirport').innerHTML = `<strong>${nearest.name} (${nearest.iata||nearest.icao||''})</strong><br>${nearest.distance.toFixed(1)} km away<br>${nearest.fullAddress}`;
+            document.getElementById('airportList').innerHTML = airports.map(a=>`<div class="airport-item"><div class="airport-name">${a.name}</div><div class="airport-dist">${a.distance.toFixed(1)} km</div></div>`).join('');
+        }else{
+            document.getElementById('nearestAirport').textContent="No airports found nearby";
+            document.getElementById('airportList').innerHTML="<em>No airports found.</em>";
         }
 
-        result.classList.add('show');
-    }catch(e){ error.textContent=e.message; error.style.display='block'; }
-    finally{ loading.style.display='none'; }
+        document.getElementById('result').classList.add('show');
+    }catch(e){
+        alert("Error fetching data: "+e.message);
+    }
 }
 
-// Copy results
 async function copyResults(){
-    const ip = document.getElementById('ip').textContent;
-    const country = document.getElementById('country').textContent;
-    const isp = document.getElementById('isp').textContent;
-    const address = document.getElementById('address').textContent;
-    const nearest = document.getElementById('nearestAirport').innerText;
-    const listItems = Array.from(document.querySelectorAll('.airport-item')).map(item=>{
-        const name = item.querySelector('.airport-name').textContent;
-        const dist = item.querySelector('.airport-dist').textContent;
-        return `• ${name} – ${dist}`;
-    });
-    const text = `IP LOOKUP RESULTS\n━━━━━━━━━━━━━━━━━━━━\nIP Address: ${ip}\nCountry: ${country}\nISP: ${isp}\n\nHOME ADDRESS\n${address}\n\nNEAREST AIRPORT\n${nearest}\n\nALL AIRPORTS WITHIN 100 KM\n${listItems.join('\n')}`;
+    const text = `
+IP: ${document.getElementById('ip').textContent}
+Country: ${document.getElementById('country').textContent}
+ISP: ${document.getElementById('isp').textContent}
+
+Home Address:
+${document.getElementById('address').textContent}
+
+Nearest Airport:
+${document.getElementById('nearestAirport').innerText}
+`;
     await navigator.clipboard.writeText(text);
-    const notif = document.getElementById('copyNotif'); notif.classList.add('show'); setTimeout(()=>notif.classList.remove('show'),2000);
+    const notif = document.getElementById('copyNotif');
+    notif.classList.add('show');
+    setTimeout(()=>notif.classList.remove('show'),2000);
 }
 
-document.getElementById('ipInput').addEventListener('keypress', e=>{ if(e.key==='Enter') lookupIP(); });
+document.getElementById('ipInput').addEventListener('keypress',e=>{if(e.key==='Enter')lookupIP();});
 </script>
 </body>
 </html>
