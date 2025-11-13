@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>IP Lookup Pro – Full Address & Airports</title>
+<title>IP Lookup Pro – Airports & Full Address</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 :root {
@@ -47,7 +47,7 @@ button:hover { background:#1d4ed8; }
 </head>
 <body>
 <div class="container">
-<h1>IP Lookup Pro – Full Address & Airports</h1>
+<h1>IP Lookup Pro – Airports & Full Address</h1>
 <input id="ipInput" placeholder="Enter IP (e.g. 8.8.8.8) or leave blank for your IP">
 <button onclick="lookupIP()">Lookup IP</button>
 
@@ -84,14 +84,13 @@ button:hover { background:#1d4ed8; }
 
 <script>
 // Cache
-const cache = new Map();
 const addressCache = new Map();
 let airportsCSV = null;
 
-// Fetch airports CSV (public folder)
+// Fetch OurAirports CSV
 async function fetchAirportsCSV(){
     if(airportsCSV) return airportsCSV;
-    const resp = await fetch('/airports.csv');
+    const resp = await fetch('/airports.csv'); // Place OurAirports CSV in public folder
     airportsCSV = await resp.text();
     return airportsCSV;
 }
@@ -120,12 +119,12 @@ function formatAddress(data){
     return parts.join(', ') || data.display_name || "Unknown";
 }
 
-// Reverse geocode
+// Reverse geocode in English
 async function reverseGeocode(lat, lon){
     const key = `${lat},${lon}`;
     if(addressCache.has(key)) return addressCache.get(key);
     try{
-        const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1&accept-language=en`, 
+        const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1&accept-language=en`,
             {headers:{'User-Agent':'IPLookupTool/1.0'}});
         const data = await resp.json();
         const addr = formatAddress(data);
@@ -140,10 +139,11 @@ async function getNearbyAirports(lat, lon){
     const rows = csv.split("\n").slice(1).map(r=>r.split(",")).filter(r=>r.length>5);
     const airports = [];
     for(const r of rows){
-        const name = r[2], aLat=parseFloat(r[3]), aLon=parseFloat(r[4]), iata=r[1], icao=r[0];
+        const icao = r[0], iata = r[12], name = r[2];
+        const aLat = parseFloat(r[3]), aLon = parseFloat(r[4]);
         if(!isNaN(aLat) && !isNaN(aLon)){
             const dist = distance(lat, lon, aLat, aLon);
-            if(dist <= 100) airports.push({name, lat:aLat, lon:aLon, distance:dist, iata, icao});
+            if(dist <= 100) airports.push({icao,iata,name,lat:aLat,lon:aLon,distance:dist});
         }
     }
     airports.sort((a,b)=>a.distance-b.distance);
